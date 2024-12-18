@@ -3,9 +3,12 @@ from sqlalchemy.orm import Session
 from config import app, templates
 from db import get_db, User
 from sqlalchemy.exc import IntegrityError
+from functools import wraps
 
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import Request, Depends, Form
+
+
 
 
 @app.get('/', response_class=HTMLResponse)
@@ -51,3 +54,18 @@ async def login(request: Request, username: str = Form(...), password: str = For
     request.session['is_authenticated'] = True
     request.session['user_id'] = user.id
     return RedirectResponse('/', status_code=303)
+
+
+@app.get('/is-admin', response_class=HTMLResponse)
+async def get_is_admin_page(request: Request, db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return templates.TemplateResponse('is-admin.html', {'request': request, 'users': users})
+
+
+@app.post('/is-admin')
+async def update_admins(is_admin: list[int] = Form([]), db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    for user in users:
+        user.is_admin = user.id in is_admin
+    db.commit()
+    return RedirectResponse('/is-admin', status_code=303)
