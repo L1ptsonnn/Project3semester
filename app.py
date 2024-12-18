@@ -12,9 +12,11 @@ from fastapi import Request, Depends, Form
 async def index(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse('index.html', {'request': request})
 
+
 @app.get("/register", response_class=HTMLResponse)
 async def register(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
+
 
 @app.post('/register')
 async def register(
@@ -34,3 +36,8 @@ async def register(
         return RedirectResponse('/register?is_invalid_data=True', status_code=303)
 
     return RedirectResponse('/', status_code=303)
+
+
+@app.get('/login', response_class=HTMLResponse)
+async def register(request: Request):
+    return templates.TemplateResponse('login.html', {'request': request})
