@@ -5,10 +5,31 @@ from db import get_db, User
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
 
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi import Request, Depends, Form
 
 
+def login_required(view):
+    @wraps(view)
+    async def wrapped(request: Request, *args, db: Session, **kwargs):
+        if not request.session.get('is_authenticated', False):
+            return RedirectResponse('/login')
+        return await view(request, *args, db=db, **kwargs)
+    return wrapped
+
+def admin_required(view):
+    @wraps(view)
+    async def wrapped(request: Request, *args, db: Session, **kwargs):
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return RedirectResponse('/login')
+
+        user = db.query(User).filter_by(id=user_id).first()
+        if not user or not user.is_admin:
+            return JSONResponse(content={"error": "Don't have permission"}, status_code=403)
+
+        return await view(request, *args, db=db, **kwargs)
+    return wrapped
 
 
 @app.get('/', response_class=HTMLResponse)
@@ -57,12 +78,16 @@ async def login(request: Request, username: str = Form(...), password: str = For
 
 
 @app.get('/is-admin', response_class=HTMLResponse)
+@login_required
+@admin_required
 async def get_is_admin_page(request: Request, db: Session = Depends(get_db)):
     users = db.query(User).all()
     return templates.TemplateResponse('is-admin.html', {'request': request, 'users': users})
 
 
 @app.post('/is-admin')
+@login_required
+@admin_required
 async def update_admins(is_admin: list[int] = Form([]), db: Session = Depends(get_db)):
     users = db.query(User).all()
     for user in users:
