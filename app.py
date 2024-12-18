@@ -41,3 +41,13 @@ async def register(
 @app.get('/login', response_class=HTMLResponse)
 async def register(request: Request):
     return templates.TemplateResponse('login.html', {'request': request})
+
+
+@app.post('/login')
+async def login(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(username=username, password=password).first()
+    if user is None:
+        return RedirectResponse('/login', status_code=303)
+    request.session['is_authenticated'] = True
+    request.session['user_id'] = user.id
+    return RedirectResponse('/', status_code=303)
