@@ -17,6 +17,7 @@ def login_required(view):
         return await view(request, *args, db=db, **kwargs)
     return wrapped
 
+
 def admin_required(view):
     @wraps(view)
     async def wrapped(request: Request, *args, db: Session, **kwargs):
