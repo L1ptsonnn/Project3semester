@@ -33,9 +33,16 @@ def admin_required(view):
     return wrapped
 
 
-@app.get('/', response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
 async def index(request: Request, db: Session = Depends(get_db)):
-    return templates.TemplateResponse('index.html', {'request': request})
+    user_id = request.session.get("user_id")
+    user = db.query(User).filter(User.id == user_id).first() if user_id else None
+    if user and user.is_admin:
+        return templates.TemplateResponse("index-admin.html", {"request": request})
+    elif user:
+        return templates.TemplateResponse("index.html", {"request": request})
+    else:
+        return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/register", response_class=HTMLResponse)
