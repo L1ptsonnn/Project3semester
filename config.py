@@ -7,6 +7,8 @@ from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.add_middleware(SessionMiddleware, secret_key='12345')
 
 templates = Jinja2Templates(directory="templates")

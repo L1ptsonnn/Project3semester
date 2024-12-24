@@ -21,14 +21,7 @@ def get_db():
         db.close()
 
 
-class ModelDateDataMixin(Base):
-    __abstract__ = True
-
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    modified_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-
-
-class User(ModelDateDataMixin):
+class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
@@ -37,7 +30,7 @@ class User(ModelDateDataMixin):
     is_admin = Column(Integer, default=False)
 
 
-class Post(ModelDateDataMixin):
+class Post(Base):
     __tablename__ = 'posts'
 
     id = Column(Integer, primary_key=True, index=True)
