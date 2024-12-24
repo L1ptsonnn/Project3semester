@@ -1,0 +1,84 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    background-color: #212529;
+    color: white;
+}
+
+.sidebar {
+    background-color: #343a40;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+    width: 250px;
+    border: 2px solid black;
+    box-shadow: 3px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: left;
+    border-bottom: 2px solid white;
+    padding-bottom: 10px;
+}
+
+.sidebar .add-post-link {
+    margin-top: 20px;
+    color: white;
+    font-size: 16px;
+    text-decoration: none;
+    font-weight: bold;
+    background-color: transparent;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    display: block;
+}
+
+.sidebar .add-post-link:hover {
+    color: #343a40;
+    background-color: white;
+}
+
+.content {
+    margin-left: 270px;
+    padding: 20px;
+    flex-grow: 1;
+    background-color: #212529;
+    border-radius: 8px;
+}
+
+.content h1 {
+    margin-bottom: 20px;
+}
+
+.content form {
+    background-color: #343a40;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.content form .form-label {
+    font-size: 16px;
+    color: white;
+}
+
+.content form .form-control {
+    background-color: #495057;
+    border: 1px solid #6c757d;
+    color: white;
+}
+
+.content form button {
+    background-color: white;
+    color: #212529;
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 10px 20px;
+}
+
+.content form button:hover {
+    background-color: #343a40;
+    color: white;
+}
