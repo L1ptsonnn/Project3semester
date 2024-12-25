@@ -30,7 +30,7 @@ class User(Base):
     is_admin = Column(Integer, default=False)
 
 
-class Post(Base):
+class Tours(Base):
     __tablename__ = 'posts'
 
     id = Column(Integer, primary_key=True, index=True)

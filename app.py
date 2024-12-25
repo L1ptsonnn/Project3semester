@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from config import app, templates
-from db import get_db, User, Post
+from db import get_db, User, Tours
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
 
@@ -38,7 +38,7 @@ async def index(request: Request, db: Session = Depends(get_db)):
     user_id = request.session.get("user_id")
     user = db.query(User).filter(User.id == user_id).first() if user_id else None
 
-    tours = db.query(Post).all()
+    tours = db.query(Tours).all()
 
     if user and user.is_admin:
         return templates.TemplateResponse("index-admin.html", {"request": request, "tours": tours})
@@ -115,7 +115,7 @@ async def tour_create(request: Request):
 @app.post('/tour-create')
 async def create_tour(request: Request, country: str = Form(...), content: str = Form(...),
                       group_size: int = Form(...), price: int = Form(...), db: Session = Depends(get_db)):
-    new_tour = Post(country=country, content=content, group_size=group_size, price=price)
+    new_tour = Tours(country=country, content=content, group_size=group_size, price=price)
 
     db.add(new_tour)
     db.commit()
