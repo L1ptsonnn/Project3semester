@@ -6,7 +6,7 @@ $('#postSave').click(function () {
     formData.append('price', $('#price').val());
 
     $.ajax({
-        url: '/tour-create',  // Заміна на правильний шлях
+        url: '/tour-create',
         type: 'POST',
         data: formData,
         processData: false,

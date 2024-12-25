@@ -37,12 +37,15 @@ def admin_required(view):
 async def index(request: Request, db: Session = Depends(get_db)):
     user_id = request.session.get("user_id")
     user = db.query(User).filter(User.id == user_id).first() if user_id else None
+
+    tours = db.query(Post).all()
+
     if user and user.is_admin:
-        return templates.TemplateResponse("index-admin.html", {"request": request})
+        return templates.TemplateResponse("index-admin.html", {"request": request, "tours": tours})
     elif user:
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse("index.html", {"request": request, "tours": tours})
     else:
-        return templates.TemplateResponse("index.html", {"request": request})
+        return templates.TemplateResponse("index.html", {"request": request, "tours": tours})
 
 
 @app.get("/register", response_class=HTMLResponse)
@@ -101,7 +104,7 @@ async def update_admins(is_admin: list[int] = Form([]), db: Session = Depends(ge
     for user in users:
         user.is_admin = user.id in is_admin
     db.commit()
-    return RedirectResponse('/is-admin', status_code=303)
+    return RedirectResponse('/', status_code=303)
 
 
 @app.get("/tour-create", response_class=HTMLResponse)
