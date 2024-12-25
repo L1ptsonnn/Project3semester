@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from config import app, templates
-from db import get_db, User
+from db import get_db, User, Post
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
 
@@ -102,3 +102,20 @@ async def update_admins(is_admin: list[int] = Form([]), db: Session = Depends(ge
         user.is_admin = user.id in is_admin
     db.commit()
     return RedirectResponse('/is-admin', status_code=303)
+
+
+@app.get("/tour-create", response_class=HTMLResponse)
+async def tour_create(request: Request):
+    return templates.TemplateResponse("tour-create.html", {"request": request})
+
+
+@app.post('/tour-create')
+async def create_tour(request: Request, country: str = Form(...), content: str = Form(...),
+                      group_size: int = Form(...), price: int = Form(...), db: Session = Depends(get_db)):
+    new_tour = Post(country=country, content=content, group_size=group_size, price=price)
+
+    db.add(new_tour)
+    db.commit()
+    db.refresh(new_tour)
+
+    return RedirectResponse(url="/", status_code=303)

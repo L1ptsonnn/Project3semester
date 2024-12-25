@@ -64,11 +64,23 @@ body {
     color: white;
 }
 
+.content form .form-control.small-input {
+    background-color: #495057;
+    border: 1px solid #6c757d;
+    color: white;
+    width: auto;
+    max-width: 120px;
+    height: 38px;
+}
+
+
 .content form .form-control {
     background-color: #495057;
     border: 1px solid #6c757d;
     color: white;
+    width: 100%;
 }
+
 
 .content form button {
     background-color: white;
