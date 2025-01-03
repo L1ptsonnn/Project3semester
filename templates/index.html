@@ -16,18 +16,14 @@
     <div class="main-content">
         <div class="container mt-5">
             <h1 class="text-center">Доступні Тури</h1>
-            <div class="row">
+            <div class="tour-list">
                 {% for tour in tours %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ tour.country }}</h5>
-                            <p class="card-text">{{ tour.content[:100] }}...</p>
-                            <p><strong>Кількість людей:</strong> {{ tour.group_size }}</p>
-                            <p><strong>Ціна:</strong> {{ tour.price }} грн</p>
-                            <a href="/tour/{{ tour.id }}" class="btn btn-primary">Детальніше</a>
-                        </div>
-                    </div>
+                <div class="tour-item">
+                    <h3 class="tour-title">{{ tour.country }}</h3>
+                    <p class="tour-description">{{ tour.content }}</p>
+                    <p><strong>Кількість людей:</strong> {{ tour.group_size }}</p>
+                    <p><strong>Ціна:</strong> {{ tour.price }} грн</p>
+                    <a href="/tour/{{ tour.id }}" class="btn btn-primary">Детальніше</a>
                 </div>
                 {% endfor %}
             </div>
