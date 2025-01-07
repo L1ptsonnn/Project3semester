@@ -143,6 +143,32 @@ async def create_tour(
     return RedirectResponse(url='/', status_code=302)
 
 
+@app.post("/edit-tour/{tour_id}")
+async def edit_tour(tour_id: int, country: str = Form(...), content: str = Form(...), group_size: int = Form(...),
+                    price: int = Form(...), image: UploadFile = File(None), db: Session = Depends(get_db)):
+
+    tour = db.query(Tours).filter(Tours.id == tour_id).first()
+    if not tour:
+        raise HTTPException(status_code=404, detail="Tour not found")
+
+    if image:
+        image_path = f"static/pictures/{image.filename}"
+        with open(image_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+        tour.image = image_path
+
+    tour.country = country
+    tour.content = content
+    tour.group_size = group_size
+    tour.price = price
+
+    db.commit()
+    db.refresh(tour)
+
+    return RedirectResponse(url="/", status_code=303)
+
+
+
 @app.post('/delete-tour/{tour_id}')
 async def delete_tour(tour_id: int, db: Session = Depends(get_db)):
     tour_to_delete = db.query(Tours).filter(Tours.id == tour_id).first()
