@@ -38,5 +38,4 @@ class Tours(Base):
     content = Column(Text, nullable=False)
     group_size = Column(Integer, nullable=False)
     price = Column(Integer, nullable=False)
-    image = Column(String, nullable=False, default="/static/pictures/default_tour.png")
-
+    image = Column(String, default='static/pictures/default_tour.jpg')

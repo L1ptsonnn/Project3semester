@@ -5,9 +5,14 @@ from db import get_db, User, Tours
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
 
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
-from fastapi import Request, Depends, Form, HTTPException
+import os
+import shutil
+from datetime import *
 
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi import Request, Depends, Form, HTTPException, File, UploadFile
+
+UPLOAD_FOLDER = "static/pictures"
 
 def login_required(view):
     @wraps(view)
@@ -114,8 +119,17 @@ async def tour_create(request: Request):
 
 @app.post('/tour-create')
 async def create_tour(request: Request, country: str = Form(...), content: str = Form(...),
-                      group_size: int = Form(...), price: int = Form(...), db: Session = Depends(get_db)):
-    new_tour = Tours(country=country, content=content, group_size=group_size, price=price)
+                      group_size: int = Form(...), price: int = Form(...),
+                      image: UploadFile = File(None), db: Session = Depends(get_db)):
+    if image:
+        filename = f"{country}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+        image_path = os.path.join(UPLOAD_FOLDER, filename)
+        with open(image_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+    else:
+        image_path = 'static/pictures/default_tour.jpg'
+
+    new_tour = Tours(country=country, content=content, group_size=group_size, price=price, image=image_path)
 
     db.add(new_tour)
     db.commit()
