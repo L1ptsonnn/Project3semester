@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from functools import wraps
 
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
-from fastapi import Request, Depends, Form
+from fastapi import Request, Depends, Form, HTTPException
 
 
 def login_required(view):
@@ -121,4 +121,14 @@ async def create_tour(request: Request, country: str = Form(...), content: str =
     db.commit()
     db.refresh(new_tour)
 
+    return RedirectResponse(url="/", status_code=303)
+
+
+@app.post('/delete-tour/{tour_id}')
+async def delete_tour(tour_id: int, db: Session = Depends(get_db)):
+    tour_to_delete = db.query(Tours).filter(Tours.id == tour_id).first()
+    if not tour_to_delete:
+        raise HTTPException(status_code=404, detail="Tour not found")
+    db.delete(tour_to_delete)
+    db.commit()
     return RedirectResponse(url="/", status_code=303)
