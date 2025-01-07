@@ -1,16 +1,12 @@
 from sqlalchemy.orm import Session
-
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi import Request, Depends, Form, File, UploadFile, HTTPException
 from config import app, templates
 from db import get_db, User, Tours
 from sqlalchemy.exc import IntegrityError
-from functools import wraps
-
 import os
 import shutil
-from datetime import *
-
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
-from fastapi import Request, Depends, Form, HTTPException, File, UploadFile
+from functools import wraps
 
 UPLOAD_FOLDER = "static/pictures"
 
@@ -59,7 +55,7 @@ async def register(request: Request):
 
 
 @app.post('/register')
-async def register(
+async def register_post(
         request: Request,
         username: str = Form(...),
         password: str = Form(...),
@@ -79,12 +75,12 @@ async def register(
 
 
 @app.get('/login', response_class=HTMLResponse)
-async def register(request: Request):
+async def login(request: Request):
     return templates.TemplateResponse('login.html', {'request': request})
 
 
 @app.post('/login')
-async def login(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+async def login_post(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     user = db.query(User).filter_by(username=username, password=password).first()
     if user is None:
         return RedirectResponse('/login', status_code=303)
@@ -117,25 +113,34 @@ async def tour_create(request: Request):
     return templates.TemplateResponse("tour-create.html", {"request": request})
 
 
-@app.post('/tour-create')
-async def create_tour(request: Request, country: str = Form(...), content: str = Form(...),
-                      group_size: int = Form(...), price: int = Form(...),
-                      image: UploadFile = File(None), db: Session = Depends(get_db)):
+@app.post("/tour-create")
+async def create_tour(
+        country: str = Form(...),
+        content: str = Form(...),
+        group_size: int = Form(...),
+        price: int = Form(...),
+        image: UploadFile = File(None),
+        db: Session = Depends(get_db)
+):
+    image_path = "static/pictures/default_tour.png"
+
     if image:
-        filename = f"{country}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
-        image_path = os.path.join(UPLOAD_FOLDER, filename)
+        image_path = os.path.join(UPLOAD_FOLDER, image.filename)
         with open(image_path, "wb") as buffer:
             shutil.copyfileobj(image.file, buffer)
-    else:
-        image_path = 'static/pictures/default_tour.jpg'
 
-    new_tour = Tours(country=country, content=content, group_size=group_size, price=price, image=image_path)
+    new_tour = Tours(
+        country=country,
+        content=content,
+        group_size=group_size,
+        price=price,
+        image=image_path
+    )
 
     db.add(new_tour)
     db.commit()
-    db.refresh(new_tour)
 
-    return RedirectResponse(url="/", status_code=303)
+    return RedirectResponse(url='/', status_code=302)
 
 
 @app.post('/delete-tour/{tour_id}')
