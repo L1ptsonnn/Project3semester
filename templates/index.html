@@ -43,6 +43,7 @@
         </div>
     </div>
 
+    <!-- Modal for Buying Tour -->
     <div class="modal fade" id="buyTourModal" tabindex="-1" aria-labelledby="buyTourModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -68,9 +69,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-                        {% for tour in tours %}
-                        <button class="buy-button" data-tour-id="{{ tour.id }}">Купити</button>
-                        {% endfor %}
+                        <button type="submit" class="btn btn-success">Купити</button>
                     </div>
                 </form>
             </div>
