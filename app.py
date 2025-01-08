@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi import Request, Depends, Form, File, UploadFile, HTTPException
 from config import app, templates
-from db import get_db, User, Tours
+from db import get_db, User, Tours, Booked
 from sqlalchemy.exc import IntegrityError
 import os
 import shutil
@@ -90,23 +90,19 @@ async def login_post(request: Request, username: str = Form(...), password: str 
 
 
 @app.get('/is-admin', response_class=HTMLResponse)
-@login_required
-@admin_required
 async def get_is_admin_page(request: Request, db: Session = Depends(get_db)):
     users = db.query(User).all()
     return templates.TemplateResponse('is-admin.html', {'request': request, 'users': users})
 
-
 @app.post('/is-admin')
 @login_required
 @admin_required
-async def update_admins(is_admin: list[int] = Form([]), db: Session = Depends(get_db)):
+async def update_admins(request: Request, is_admin: list[int] = Form([]), db: Session = Depends(get_db)):
     users = db.query(User).all()
     for user in users:
         user.is_admin = user.id in is_admin
     db.commit()
     return RedirectResponse('/', status_code=303)
-
 
 @app.get("/tour-create", response_class=HTMLResponse)
 async def tour_create(request: Request):
@@ -177,3 +173,18 @@ async def delete_tour(tour_id: int, db: Session = Depends(get_db)):
     db.delete(tour_to_delete)
     db.commit()
     return RedirectResponse(url="/", status_code=303)
+
+
+@app.post('/book-tour/')
+async def book_tour(
+    tour_id: int = Form(...),
+    user_id: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    tour = db.query(Tours).filter(Tours.id == tour_id).first()
+    if not tour:
+        raise HTTPException(status_code=404, detail="Tour not found")
+
+
+    db.commit()
+    return {"message": "Tour booked successfully"}

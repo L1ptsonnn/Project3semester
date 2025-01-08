@@ -7,16 +7,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardInput = document.getElementById('cardNumber');
     const buyForm = document.getElementById('buyTourForm');
 
+    let selectedTourId = null;
+
     buyButtons.forEach(button => {
         button.addEventListener('click', () => {
             const price = button.dataset.price;
+            selectedTourId = button.dataset.tourId;
             modalPrice.textContent = `${price} грн`;
             totalPrice.value = price;
             modal.show();
         });
     });
 
-    buyForm.addEventListener('submit', (e) => {
+    buyForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const selectedDate = dateInput.value;
         const cardNumber = cardInput.value;
@@ -26,8 +29,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        alert(`Покупка успішна!\nДата туру: ${selectedDate}\nНомер карти: ${cardNumber}\nСума: ${totalPrice.value} грн`);
-        modal.hide();
-        buyForm.reset();
+        try {
+            const response = await fetch('/book-tour/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tour_id: selectedTourId,
+                    date: selectedDate,
+                    card_number: cardNumber,
+                }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(`Покупка успішна!\nДата туру: ${selectedDate}\nНомер карти: ${cardNumber}\nСума: ${totalPrice.value} грн`);
+                modal.hide();
+                buyForm.reset();
+            } else {
+                alert('Сталася помилка при бронюванні туру.');
+            }
+        } catch (error) {
+            console.error('Помилка:', error);
+            alert('Сталася помилка при бронюванні туру.');
+        }
     });
 });
