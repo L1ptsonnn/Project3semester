@@ -39,3 +39,13 @@ class Tours(Base):
     group_size = Column(Integer, nullable=False)
     price = Column(Integer, nullable=False)
     image = Column(String, default='static/pictures/default_tour.jpg')
+
+
+class Booked(Base):
+    __tablename__ = "booked"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    tour_id = Column(Integer, ForeignKey("posts.id"))
+
+    tour = relationship("Tours")
+    user = relationship("User")
