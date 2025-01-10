@@ -46,7 +46,7 @@ async def index(request: Request, db: Session = Depends(get_db)):
     elif user:
         return templates.TemplateResponse("index.html", {"request": request, "tours": tours})
     else:
-        return templates.TemplateResponse("index.html", {"request": request, "tours": tours})
+        return templates.TemplateResponse("non-login-index.html", {"request": request, "tours": tours})
 
 
 @app.get("/register", response_class=HTMLResponse)
@@ -102,6 +102,13 @@ async def update_admins(is_admin: list[int] = Form([]), db: Session = Depends(ge
         user.is_admin = user.id in is_admin
     db.commit()
     return RedirectResponse('/', status_code=303)
+
+
+@app.get("/logout")
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/login", status_code=303)
+
 
 
 @app.get("/tour-create", response_class=HTMLResponse)
