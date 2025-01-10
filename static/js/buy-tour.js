@@ -6,28 +6,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('tourDate');
     const cardInput = document.getElementById('cardNumber');
     const buyForm = document.getElementById('buyTourForm');
+    const buyButton = document.getElementById('buy-tour');
 
     buyButtons.forEach(button => {
         button.addEventListener('click', () => {
             const price = button.dataset.price;
             modalPrice.textContent = `${price} грн`;
             totalPrice.value = price;
+            buyButton.dataset.id = button.dataset.id
             modal.show();
         });
-    });
-
-    buyForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const selectedDate = dateInput.value;
-        const cardNumber = cardInput.value;
-
-        if (!selectedDate || !cardNumber) {
-            alert('Будь ласка, заповніть всі поля!');
-            return;
-        }
-
-        alert(`Покупка успішна!\nДата туру: ${selectedDate}\nНомер карти: ${cardNumber}\nСума: ${totalPrice.value} грн`);
-        modal.hide();
-        buyForm.reset();
-    });
+    }
 });
+
+$("#buy-tour").click(function(){
+    let buy_button = $(this);
+    $.ajax
+})
+
+
+
+

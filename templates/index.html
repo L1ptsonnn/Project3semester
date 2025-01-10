@@ -32,7 +32,8 @@
                                 <button class="btn btn-success buy-button"
                                         data-bs-toggle="modal"
                                         data-bs-target="#buyTourModal"
-                                        data-price="{{ tour.price }}">
+                                        data-price="{{ tour.price }}"
+                                        data-id="{{ tour.id }}">
                                     Купити
                                 </button>
                             </div>
@@ -69,7 +70,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-                        <button type="submit" class="btn btn-success">Купити</button>
+                        <button type="submit" class="btn btn-success" id="buy-tour">Купити</button>
                     </div>
                 </form>
             </div>
