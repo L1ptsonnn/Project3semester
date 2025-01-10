@@ -21,8 +21,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 $("#buy-tour").click(function(){
     let buy_button = $(this);
-    $.ajax
-})
+    let tourId = buy_button.data('id');
+    let totalPrice = $("#totalPrice").val();
+    let tourDate = $("#tourDate").val();
+    let cardNumber = $("#cardNumber").val();
+
+    $.ajax({
+        url: '/buy-tour',
+        method: 'POST',
+        data: {
+            tour_id: tourId,
+            total_price: totalPrice,
+            tour_date: tourDate,
+            card_number: cardNumber
+        },
+        success: function(response) {
+            alert("Тур куплений успішно!");
+            $('#buyTourModal').modal('hide');
+        },
+        error: function(error) {
+            alert("Помилка під час покупки туру. Спробуйте ще раз.");
+        }
+    });
+});
 
 
 

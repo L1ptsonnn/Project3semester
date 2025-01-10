@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi import Request, Depends, Form, File, UploadFile, HTTPException
 from config import app, templates
-from db import get_db, User, Tours
+from db import get_db, User, Tours, Booked
 from sqlalchemy.exc import IntegrityError
 import os
 import shutil
@@ -173,3 +173,20 @@ async def delete_tour(tour_id: int, db: Session = Depends(get_db)):
     db.delete(tour_to_delete)
     db.commit()
     return RedirectResponse(url="/", status_code=303)
+
+
+@app.post("/buy-tour")
+async def buy_tour(tour_id: int, total_price: int, tour_date: str, card_number: str, db: Session = Depends(get_db), request: Request = None):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        raise HTTPException(status_code=403, detail="Користувач не авторизований")
+
+    new_booking = Booked(
+        user_id=user_id,
+        tour_id=tour_id
+    )
+    db.add(new_booking)
+    db.commit()
+    return JSONResponse(content={"message": "Тур куплений успішно!"})
+
+
